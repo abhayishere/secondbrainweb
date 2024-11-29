@@ -15,6 +15,9 @@ const LandingPage = () => {
     const token = localStorage.getItem('firebaseToken');
     const userName = localStorage.getItem('userName');
     if (token && userName && user) {
+      const idToken = localStorage.getItem('token')
+      console.log('Sending message to extension', token);
+      window.postMessage({ action: "storeToken", message: token },"*");
       router.push('/home');
     }
   }, [user, router]);
@@ -26,6 +29,8 @@ const LandingPage = () => {
       if (user) {
         const idToken = await user.getIdToken();
         login({ name: user.displayName, token: idToken });
+        localStorage.setItem('token', idToken);
+        // Send message to extension
       }
     } catch (error) {
       console.error('Error during sign-in:', error);
