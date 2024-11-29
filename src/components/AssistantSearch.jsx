@@ -11,24 +11,42 @@ const AssistantSearch = () => {
   const [filteredNodes, setFilteredNodes] = useState([]);
   const [allNodes, setAllNodes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthError, setIsAuthError] = useState(false);
   const { user, logout } = useAuth();
   const router = useRouter();
 
-  const [selectedMode, setSelectedMode] = useState({
-    id: 'ai',
-    name: 'Neural Search',
-    icon: IconBrain,
-    description: 'AI-powered semantic search'
-  });
+  const searchModes = [
+    {
+      id: 'ai',
+      name: 'Neural Search',
+      icon: IconBrain,
+      description: 'AI-powered semantic search'
+    },
+    {
+      id: 'manual',
+      name: 'Quick Filter',
+      icon: IconFilter,
+      description: 'Basic keyword filtering'
+    }
+  ];
 
-  const handleAuthError = async () => {
-    alert('Session expired. Please login again.');
+  const [selectedMode, setSelectedMode] = useState(searchModes[0]);
+
+  const handleAuthError = useCallback(async (isSessionExpired = false) => {
+    if (isAuthError) return;
+    setIsAuthError(true);
+    
+    if (isSessionExpired) {
+      alert('Session expired. Please login again.');
+    }
+    
     await logout();
     router.push('/');
-  };
+  }, [logout, router, isAuthError]);
 
-  // Define fetchNodes with useCallback before using it in useEffect
   const fetchNodes = useCallback(async () => {
+    if (!user?.token || isAuthError) return;
+    
     try {
       setIsLoading(true);
       const response = await fetch('https://secondbrainbe.onrender.com/get-links', {
@@ -38,7 +56,7 @@ const AssistantSearch = () => {
       });
       
       if (response.status === 401) {
-        handleAuthError();
+        handleAuthError(true);
         return;
       }
       
@@ -51,25 +69,23 @@ const AssistantSearch = () => {
     } catch (error) {
       console.error('Error fetching nodes:', error);
       if (error.message.includes('401')) {
-        handleAuthError();
+        handleAuthError(true);
       } else {
         alert('Something went wrong. Please try again later.');
       }
     } finally {
       setIsLoading(false);
     }
-  }, [user?.token, handleAuthError]);
+  }, [user?.token, handleAuthError, isAuthError]);
 
-  // Use fetchNodes in useEffect after it's been defined
   useEffect(() => {
-    if (user?.token) {
+    if (!user?.token && !isAuthError) {
+      handleAuthError(false);
+    } else if (user?.token && !isAuthError) {
       fetchNodes();
-    } else {
-      handleAuthError();
     }
-  }, [user, fetchNodes, handleAuthError]);
+  }, [user, fetchNodes, handleAuthError, isAuthError]);
 
-  // Filter nodes based on search query
   useEffect(() => {
     if (selectedMode.id === 'manual' && searchQuery.length >= 3) {
       const filtered = allNodes.filter(node => 
@@ -83,7 +99,6 @@ const AssistantSearch = () => {
     }
   }, [searchQuery, selectedMode.id, allNodes]);
 
-  // Fix for unescaped quotes in JSX
   const noResultsMessage = (query) => (
     <div className="text-center text-gray-500 py-8">
       No results found for &ldquo;{query}&rdquo;
@@ -103,9 +118,7 @@ const AssistantSearch = () => {
         </div>
         
         <div className="relative">
-          {/* Search Form */}
           <div className="flex gap-2">
-            {/* Dropdown Button */}
             <div className="relative">
               <button
                 type="button"
@@ -119,7 +132,6 @@ const AssistantSearch = () => {
                 />
               </button>
 
-              {/* Dropdown Menu */}
               <AnimatePresence>
                 {isDropdownOpen && (
                   <motion.div
@@ -154,7 +166,6 @@ const AssistantSearch = () => {
               </AnimatePresence>
             </div>
 
-            {/* Search Input with Warning Message Container */}
             <div className="relative flex-1">
               <input
                 type="text"
@@ -168,7 +179,6 @@ const AssistantSearch = () => {
               />
               <IconSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               
-              {/* Warning Message - Repositioned */}
               <AnimatePresence>
                 {selectedMode.id === 'manual' && searchQuery.length > 0 && searchQuery.length < 3 && (
                   <motion.div
@@ -186,8 +196,7 @@ const AssistantSearch = () => {
           </div>
         </div>
 
-        {/* Search Results */}
-        <div className="mt-12"> {/* Increased margin to accommodate warning */}
+        <div className="mt-12">
           <AnimatePresence>
             {selectedMode.id === 'manual' && searchQuery.length >= 3 && (
               <motion.div
