@@ -114,7 +114,7 @@ const SidebarDemo = () => {
   );
 }
 
-export const Logo = () => {
+const Logo = () => {
   const router = useRouter();
 
   return (
@@ -137,7 +137,7 @@ export const Logo = () => {
   );
 };
 
-export const LogoIcon = () => {
+const LogoIcon = () => {
   return (
     <Link
       href="#"
