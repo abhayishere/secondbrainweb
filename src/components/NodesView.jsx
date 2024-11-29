@@ -23,6 +23,7 @@ const NodesView = () => {
         ...node,
         _id: node._id || node.id || Math.random().toString(36).substr(2, 9)
       }));
+      console.log(nodesWithIds);
       setNodes(nodesWithIds);
     } catch (error) {
       console.error('Error fetching nodes:', error);
@@ -38,13 +39,11 @@ const NodesView = () => {
     
     try {
       setIsLoading(true);
-      const response = await fetch('https://secondbrainbe.onrender.com/delete-link', {
+      const response = await fetch(`https://secondbrainbe.onrender.com/delete-link?id=${deleteModal.nodeId}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${user?.token}`
-        },
-        body: JSON.stringify({ id: deleteModal.nodeId })
+        }
       });
 
       if (response.ok) {
