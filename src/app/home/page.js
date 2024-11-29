@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Sidebar, SidebarBody, SidebarLink } from '../../components/ui/sidebar';
-import './HomePage.css';
+import './Homepage.css';
 import Link from "next/link";
 import {
   IconArrowLeft,
