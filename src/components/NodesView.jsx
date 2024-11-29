@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { IconTrash } from '@tabler/icons-react';
 import { useAuth } from '../app/context/AuthContext';
@@ -11,11 +11,7 @@ const NodesView = () => {
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, nodeId: null });
   const { user } = useAuth();
 
-  useEffect(() => {
-    fetchNodes();
-  }, []);
-
-  const fetchNodes = async () => {
+  const fetchNodes = useCallback(async () => {
     try {
       const response = await fetch('https://secondbrainbe.onrender.com/get-links', {
         headers: {
@@ -31,7 +27,11 @@ const NodesView = () => {
     } catch (error) {
       console.error('Error fetching nodes:', error);
     }
-  };
+  }, [user?.token]);
+
+  useEffect(() => {
+    fetchNodes();
+  }, [fetchNodes]);
 
   const handleDelete = async () => {
     if (!deleteModal.nodeId) return;
