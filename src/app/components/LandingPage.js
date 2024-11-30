@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import auth from '../firebase/firebase.js';
+import Link from 'next/link';
 
 const provider = new GoogleAuthProvider();
 
@@ -106,7 +107,7 @@ const GuideSection = () => {
   };
 
   return (
-    <div className="bg-white py-20">
+    <div id="guide" className="bg-white py-20">
       <div className="container mx-auto px-8">
         <div className="flex flex-col items-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-black text-center mb-8">
@@ -271,43 +272,20 @@ const LandingPage = () => {
                 <div className="flex items-center gap-8">
                   <div className="hidden md:flex items-center gap-8">
                     {navItems.map((item) => (
-                      <motion.div
+                      <Link
                         key={item.name}
-                        className="relative"
-                        onHoverStart={() => setHoveredItem(item.name)}
-                        onHoverEnd={() => setHoveredItem(null)}
+                        href={item.href}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          document.querySelector(item.href)?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                          });
+                        }}
+                        className="nav-item-transition px-4 py-2 text-gray-600 hover:bg-black hover:text-white rounded-full"
                       >
-                        <a
-                          href={item.href}
-                          className={`text-gray-600 transition-all duration-200 px-6 py-3 rounded-full relative z-10 inline-block ${
-                            hoveredItem === item.name ? 'text-white' : 'hover:text-white'
-                          }`}
-                          onClick={(e) => {
-                            if (item.href === '#features') {
-                              e.preventDefault();
-                              document.getElementById('features').scrollIntoView({ 
-                                behavior: 'smooth',
-                                block: 'start'
-                              });
-                            }
-                          }}
-                        >
-                          {item.name}
-                        </a>
-                        <AnimatePresence>
-                          {hoveredItem === item.name && (
-                            <motion.div
-                              className="absolute inset-0 bg-black rounded-full -z-10"
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.9 }}
-                              transition={{
-                                layout: { type: "spring", bounce: 0.2 }
-                              }}
-                            />
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
+                        {item.name}
+                      </Link>
                     ))}
                   </div>
                   
