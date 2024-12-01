@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { IconBrain, IconSettings, IconShield, IconArrowRight, IconNetwork, IconMessageCircle, IconDownload, IconBookmark, IconFolders,IconLogin, IconFiles, IconFilter } from '@tabler/icons-react';
+import { IconBrain, IconSettings, IconShield, IconArrowRight, IconNetwork, IconMessageCircle, IconDownload, IconBookmark, IconFolders,IconLogin, IconFiles, IconFilter, IconBrandGithub, IconBrandTwitter } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
@@ -195,15 +195,114 @@ const GuideSection = () => {
   );
 };
 
+const Footer = () => {
+  const navItems = [
+    { name: 'Features', href: '#features' },
+    { name: 'Guide', href: '#guide' },
+    { name: 'Contact us', href: '#contact' },
+  ];
+
+  return (
+    <footer id="contact" className="bg-white py-20">
+      <div className="container mx-auto px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          {/* Logo and Description */}
+          <div className="col-span-2">
+            <div className="flex items-center gap-2 mb-6">
+              <IconBrain size={32} className="text-black" />
+              <span className="text-xl font-semibold text-black">SecondBrain</span>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Your personal knowledge assistant that helps you store, organize, and retrieve information efficiently.
+            </p>
+            <div className="flex gap-4">
+              <motion.a
+                href="https://github.com/abhayishere/secondbrainweb"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-2 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
+              >
+                <IconBrandGithub size={20} />
+              </motion.a>
+              <motion.a
+                href="https://twitter.com/yourusername"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-2 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
+              >
+                <IconBrandTwitter size={20} />
+              </motion.a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="font-semibold text-black mb-4">Quick Links</h3>
+            <div className="flex flex-col gap-3">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-gray-600 hover:text-black transition-colors"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="font-semibold text-black mb-4">Contact</h3>
+            <div className="flex flex-col gap-3">
+              <a 
+                href="mailto:abhyadav1@gmail.com" 
+                className="text-gray-600 hover:text-black transition-colors"
+              >
+                abhyadav1@gmail.com
+              </a>
+              <p className="text-gray-600">
+                123 AI Street<br />
+                San Francisco, CA 94105
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-20 pt-8 border-t border-gray-200">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-600 text-sm">
+              © {new Date().getFullYear()} SecondBrain. All rights reserved.
+            </p>
+            <div className="flex gap-6">
+              <Link href="/privacy" className="text-gray-600 hover:text-black text-sm transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="text-gray-600 hover:text-black text-sm transition-colors">
+                Terms of Service
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
 const LandingPage = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const { user, login } = useAuth();
   const router = useRouter();
 
   const navItems = [
-    { name: 'Features', href: '#features' },
-    { name: 'Guide', href: '#guide' },
-    { name: 'Contact us', href: '#contact' },
+    { name: "Features", href: "#features" },
+    { name: "Guide", href: "#guide" },
+    { name: "Contact", href: "mailto:abhyadav1@gmail.com" }
   ];
 
   useEffect(() => {
@@ -276,13 +375,15 @@ const LandingPage = () => {
                         key={item.name}
                         href={item.href}
                         onClick={(e) => {
-                          e.preventDefault();
-                          document.querySelector(item.href)?.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                          });
+                          if (item.href.startsWith('#')) {
+                            e.preventDefault();
+                            document.querySelector(item.href)?.scrollIntoView({
+                              behavior: 'smooth',
+                              block: 'start'
+                            });
+                          }
                         }}
-                        className="nav-item-transition px-4 py-2 text-gray-600 hover:bg-black hover:text-white rounded-full"
+                        className="px-4 py-2 text-gray-600 hover:bg-black hover:text-white rounded-full transition-all duration-300 ease-in-out"
                       >
                         {item.name}
                       </Link>
@@ -387,6 +488,9 @@ const LandingPage = () => {
 
                 {/* Guide Section */}
                 <GuideSection />
+                
+                {/* Footer */}
+                <Footer />
               </div>
             </div>
           </div>
